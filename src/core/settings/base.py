@@ -109,7 +109,3 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "0.0.1",
     "SERVE_INCLUDE_SCHEMA": False,
 }
-
-# Custom settings
-
-OPENAI_API_KEY = env("OPENAI_API_KEY")

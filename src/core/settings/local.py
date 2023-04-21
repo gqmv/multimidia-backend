@@ -16,3 +16,7 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+# Custom settings
+
+OPENAI_API_KEY = env("OPENAI_API_KEY")

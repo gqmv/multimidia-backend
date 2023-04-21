@@ -1,0 +1,8 @@
+django
+django-rest-framework
+openai
+django-environ
+pytest
+pytest-django
+pytest-mock
+drf-spectacular

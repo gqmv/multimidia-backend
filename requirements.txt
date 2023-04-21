@@ -6,3 +6,11 @@ pytest
 pytest-django
 pytest-mock
 drf-spectacular
+urllib3==1.26.14
+gunicorn==20.1.0
+psycopg2-binary==2.9.5
+google-cloud-secret-manager==2.4.0
+google-auth==1.30.0
+django-storages[google]==1.11.1
+google-cloud-logging
+drf-spectacular[sidecar]

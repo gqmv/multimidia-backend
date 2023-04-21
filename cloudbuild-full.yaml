@@ -1,0 +1,67 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    id: "Build"
+    args: ["build", "-t", "${_IMAGE_NAME}", "."]
+
+  - name: "gcr.io/cloud-builders/docker"
+    id: "Push"
+    args: ["push",  "${_IMAGE_NAME}"]
+
+  - name: "gcr.io/google-appengine/exec-wrapper"
+    id: "Migrate"
+    args:
+      [
+        "-i",
+        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}",
+        "-s",
+        "${PROJECT_ID}:${_REGION}:${_INSTANCE_NAME}",
+        "-e",
+        "ENV=${_ENV}",
+        "-e",
+        "CLOUDRUN_SERVICE_URL=${_CLOUDRUN_SERVICE_URL}",
+        "--",
+        "python",
+        "manage.py",
+        "migrate",
+      ]
+
+  - name: "gcr.io/google-appengine/exec-wrapper"
+    id: "Collect Static"
+    args:
+      [
+        "-i",
+        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}",
+        "-s",
+        "${PROJECT_ID}:${_REGION}:${_INSTANCE_NAME}",
+        "-e",
+        "ENV=${_ENV}",
+        "-e",
+        "CLOUDRUN_SERVICE_URL=${_CLOUDRUN_SERVICE_URL}",
+        "--",
+        "python",
+        "manage.py",
+        "collectstatic",
+        "--no-input",
+      ]
+
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    id: "Deploy"
+    entrypoint: gcloud
+    args:
+      [
+        "run",
+        "deploy",
+        "${_SERVICE_NAME}",
+        "--image=${_IMAGE_NAME}",
+        "--region=${_REGION}",
+        "--platform=managed",
+      ]
+
+options:
+  dynamic_substitutions: true
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _IMAGE_NAME: gcr.io/${PROJECT_ID}/${_SERVICE_NAME}
+  _REGION: ${_DEPLOY_REGION}

@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "drf_spectacular",
+    "drf_spectacular_sidecar",
     "questions",
 ]
 
@@ -108,4 +109,7 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "An API used in the BranIAc project.",
     "VERSION": "0.0.1",
     "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_DIST": "SIDECAR",  # shorthand to use the sidecar instead
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
 }

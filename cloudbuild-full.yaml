@@ -21,7 +21,7 @@ steps:
         "CLOUDRUN_SERVICE_URL=${_CLOUDRUN_SERVICE_URL}",
         "--",
         "python",
-        "src/manage.py",
+        "manage.py",
         "migrate",
       ]
 
@@ -39,7 +39,7 @@ steps:
         "CLOUDRUN_SERVICE_URL=${_CLOUDRUN_SERVICE_URL}",
         "--",
         "python",
-        "src/manage.py",
+        "manage.py",
         "collectstatic",
         "--no-input",
       ]

@@ -16,19 +16,6 @@ class Question(views.APIView):
 
     @extend_schema(
         request=QuestionSerializer,
-        responses={
-            HTTPStatus.OK: AnswerSerializer,
-            HTTPStatus.BAD_REQUEST: {
-                "type": "object",
-                "properties": {
-                    "answer": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                    },
-                },
-                "required": ["answer"],
-            },
-        },
         auth=None,
         examples=[
             OpenApiExample(
@@ -40,7 +27,15 @@ class Question(views.APIView):
                 },
             ),
             OpenApiExample(
-                "Normal response",
+                "Yes response",
+                response_only=True,
+                status_codes=[HTTPStatus.OK],
+                value={
+                    "answer": "Yes.",
+                },
+            ),
+            OpenApiExample(
+                "No response",
                 response_only=True,
                 status_codes=[HTTPStatus.OK],
                 value={
@@ -48,11 +43,11 @@ class Question(views.APIView):
                 },
             ),
             OpenApiExample(
-                "Error response",
+                "I can not answer that response",
                 response_only=True,
-                status_codes=[HTTPStatus.BAD_REQUEST],
+                status_codes=[HTTPStatus.OK],
                 value={
-                    "answer": ["The answer is not allowed."],
+                    "answer": "I can not answer that.",
                 },
             ),
         ],

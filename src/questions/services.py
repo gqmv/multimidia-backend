@@ -62,4 +62,9 @@ def get_answer(
     )
 
     response_text = response.choices[0]["message"]["content"]
+
+    response_text = (
+        response_text if response_text in ["yes.", "no."] else "I can not answer that."
+    )
+
     return response_text

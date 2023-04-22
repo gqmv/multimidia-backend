@@ -5,19 +5,19 @@ from http import HTTPStatus
 from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiResponse
 from drf_spectacular.types import OpenApiTypes
 
-from .serializers import GPTPromptSerializer, GPTResponseSerializer
+from .serializers import QuestionSerializer, AnswerSerializer
 
 POSSIBLE_ANSWERS = ["yes.", "no."]
 
 
 # Create your views here.
 class Question(views.APIView):
-    serializer_class = GPTPromptSerializer
+    serializer_class = QuestionSerializer
 
     @extend_schema(
-        request=GPTPromptSerializer,
+        request=QuestionSerializer,
         responses={
-            HTTPStatus.OK: GPTResponseSerializer,
+            HTTPStatus.OK: AnswerSerializer,
             HTTPStatus.BAD_REQUEST: {
                 "type": "object",
                 "properties": {
@@ -61,12 +61,12 @@ class Question(views.APIView):
         """
         An API endpoint that receives a question from the user and returns an answer from the GPT-3 API.
         """
-        request_serializer = GPTPromptSerializer(data=request.data)
+        request_serializer = QuestionSerializer(data=request.data)
         request_serializer.is_valid(raise_exception=True)
 
         response = request_serializer.create(request_serializer.validated_data)
 
-        response_serializer = GPTResponseSerializer(data={"answer": response})
+        response_serializer = AnswerSerializer(data={"answer": response})
         response_serializer.is_valid(raise_exception=True)
 
         return Response(response_serializer.validated_data, status=HTTPStatus.OK)

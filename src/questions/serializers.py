@@ -4,7 +4,7 @@ from .validators import AnswerAllowedValidator
 from .services import get_answer
 
 
-class GPTPromptSerializer(serializers.Serializer):
+class QuestionSerializer(serializers.Serializer):
     """
     A serializer responsible for receiving data from a user question.
     """
@@ -17,7 +17,7 @@ class GPTPromptSerializer(serializers.Serializer):
         return response
 
 
-class GPTResponseSerializer(serializers.Serializer):
+class AnswerSerializer(serializers.Serializer):
     """
     A serializer responsible for receiving data from a GPT response.
     """

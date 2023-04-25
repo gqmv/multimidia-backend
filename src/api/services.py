@@ -100,6 +100,7 @@ def get_answer(
         messages=messages,
         temperature=0.0,
         max_tokens=50,
+        timeout=90,
     )
 
     response_text = response.choices[0]["message"]["content"]

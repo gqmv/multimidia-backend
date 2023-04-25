@@ -38,7 +38,7 @@ The following environment variables need to be defined in order to run the API:
 
 | Variable         | Description                                                                                    | Default |
 | ---------------- | ---------------------------------------------------------------------------------------------- | ------- |
-| `ENV`            | The environment the API is running in. This is used to load the correct Django Settings Module | `local`   |
+| `ENV`            | The environment the API is running in. This is used to load the correct Django Settings Module | `local` |
 | `SECRET_KEY`     | The secret key used by Django                                                                  | `None`  |
 | `OPENAI_API_KEY` | The API key for OpenAI                                                                         | `None`  |
 | `DEBUG`          | Whether to run the API in debug mode                                                           | `False` |
@@ -53,6 +53,6 @@ The API is available at `http://localhost:8000/api/` by default.
 
 An OpenAPI-compliant schema is available at `http://localhost:8000/api/schema/` by default.
 
-Documentation is available at `http://localhost:8000/api/schema/redoc/` by default.
+Documentation is available at `http://localhost:8000/api/schema/swagger-ui/` by default.
 
 

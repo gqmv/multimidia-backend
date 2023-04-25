@@ -6,6 +6,15 @@ from .countries import COUNTRIES
 from .models import DailySolution
 
 
+class MessageSerializer(serializers.Serializer):
+    """
+    This serializer is used to serialize a message instance.
+    """
+
+    text = serializers.CharField(max_length=100, required=True, write_only=True)
+    is_user = serializers.BooleanField(required=True, write_only=True)
+
+
 class QuestionSerializer(serializers.Serializer):
     """
     A serializer responsible for receiving data from a user question.
@@ -13,10 +22,14 @@ class QuestionSerializer(serializers.Serializer):
 
     country = serializers.CharField(max_length=50, required=True, write_only=True)
     question = serializers.CharField(max_length=100, required=True, write_only=True)
+    context = MessageSerializer(many=True, required=False, write_only=True)
 
     def create(self, validated_data: dict) -> str:
-        response = get_answer(validated_data["country"], validated_data["question"])
-        return response
+        return get_answer(
+            country=validated_data["country"],
+            question=validated_data["question"],
+            context=validated_data.get("context", None),
+        )
 
 
 class AnswerSerializer(serializers.Serializer):
@@ -33,7 +46,7 @@ class AnswerSerializer(serializers.Serializer):
 
 class DailySolutionSerializer(serializers.ModelSerializer):
     """
-    A serializer responsible for the data of the solution that is changed daily.
+    This serializer is used for sending the daily solution to the frontend.
     """
 
     class Meta:

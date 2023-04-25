@@ -24,7 +24,25 @@ class Question(views.APIView):
         },
         examples=[
             OpenApiExample(
-                "Normal request",
+                "With context request",
+                request_only=True,
+                value={
+                    "country": "Brazil",
+                    "question": "Is this country in South America?",
+                    "context": [
+                        {
+                            "text": "Is this country beautiful?",
+                            "is_user": True,
+                        },
+                        {
+                            "text": "Yes.",
+                            "is_user": False,
+                        },
+                    ],
+                },
+            ),
+            OpenApiExample(
+                "No context request",
                 request_only=True,
                 value={
                     "country": "Brazil",

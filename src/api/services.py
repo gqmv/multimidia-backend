@@ -36,23 +36,65 @@ DEFAULT_ACCEPTANCE_MESSAGE = (
 )
 
 
+def build_context(
+    messagesBuilder: MessagesBuilder, context: list[dict[str, str]]
+) -> None:
+    """Adds a context to the messages list."""
+    for message in context:
+        if message["is_user"]:
+            messagesBuilder.add_user_message(message["text"])
+        else:
+            messagesBuilder.add_assistant_message(message["text"])
+
+
+def build_messages(
+    country: str,
+    question: str,
+    prompt_model: str = DEFAULT_PROMPT_MODEL,
+    acceptance_message: str = DEFAULT_ACCEPTANCE_MESSAGE,
+    context: list[dict[str, str]] = None,
+) -> list[dict[str, str]]:
+    """
+    Builds a list of messages to be sent to the GPT-3 API.
+    If the argument prompt_model is provided, it must have a {country} placeholder.
+    """
+    messagesBuilder = MessagesBuilder()
+    messagesBuilder.add_user_message(prompt_model.format(country=country))
+    messagesBuilder.add_assistant_message(acceptance_message)
+
+    if context:
+        build_context(messagesBuilder, context)
+
+    messagesBuilder.add_user_message(question)
+
+    return messagesBuilder.build()
+
+
+def validate_answer(answer: str) -> str:
+    """Returns a validated answer."""
+    if answer.lower() in ["yes.", "no."]:
+        return answer
+    return "I can not answer that."
+
+
 def get_answer(
     country: str,
     question: str,
     prompt_model: str = DEFAULT_PROMPT_MODEL,
     acceptance_message: str = DEFAULT_ACCEPTANCE_MESSAGE,
+    context: list[dict[str, str]] = None,
 ) -> str | None:
     """
     Asks a question to the GPT-3 API using the prompt defined in the PROMPT variable.
     If the argument prompt_model is provided, it must have a {country} placeholder.
     """
-    prompt = prompt_model.format(country=country)
-
-    messagesBuilder = MessagesBuilder()
-    messagesBuilder.add_user_message(prompt)
-    messagesBuilder.add_assistant_message(acceptance_message)
-    messagesBuilder.add_user_message(question)
-    messages = messagesBuilder.build()
+    messages = build_messages(
+        country=country,
+        question=question,
+        prompt_model=prompt_model,
+        acceptance_message=acceptance_message,
+        context=context,
+    )
 
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo-0301",
@@ -63,8 +105,4 @@ def get_answer(
 
     response_text = response.choices[0]["message"]["content"]
 
-    response_text = (
-        response_text if response_text.lower() in ["yes.", "no."] else "I can not answer that."
-    )
-
-    return response_text
+    return validate_answer(response_text)

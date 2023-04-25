@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from .validators import AnswerAllowedValidator
 from .services import get_answer
+from .countries import COUNTRIES
+from .models import DailySolution
 
 
 class QuestionSerializer(serializers.Serializer):
@@ -27,3 +29,14 @@ class AnswerSerializer(serializers.Serializer):
         required=True,
         validators=[AnswerAllowedValidator],
     )
+
+
+class DailySolutionSerializer(serializers.ModelSerializer):
+    """
+    A serializer responsible for the data of the solution that is changed daily.
+    """
+
+    class Meta:
+        model = DailySolution
+        fields = ["id", "solution", "date"]
+        read_only_fields = ["id", "date", "solution"]

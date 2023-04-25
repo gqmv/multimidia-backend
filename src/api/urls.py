@@ -6,10 +6,11 @@ from drf_spectacular.views import (
     SpectacularRedocView,
 )
 
-from .views import Question
+from .views import Question, DailySolution
 
 urlpatterns = [
     path("question/", Question.as_view()),
+    path("daily-solution/", DailySolution.as_view()),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "schema/swagger-ui/",

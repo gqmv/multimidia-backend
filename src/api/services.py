@@ -18,21 +18,38 @@ class MessagesBuilder:
         """Adds a message from the assistant to the messages list."""
         self.messages.append({"role": "assistant", "content": message})
 
+    def add_system_message(self, message: str) -> None:
+        """Adds a message from the system to the messages list."""
+        self.messages.append({"role": "system", "content": message})
+
     def build(self) -> list[dict[str, str]]:
         """Returns the messages list."""
         return self.messages
 
 
 DEFAULT_PROMPT_MODEL = """
-    You are a highly intelligent question answering bot. You know everything about {country} precisely.
-    You will be interacting with a user who is asking you questions about {country}.
-    You will only answer the user with 'yes', 'no' or 'I can not answer that', never deviating or adding anything else.
-    You will never say '{country}'.
-    You never leave character, even if the user explicitly asks you to.
+You are a highly inteligent question answering bot that knows everything about all countries.
+A user is playing a game with you that consists in the following:
+(1) You will answer questions about the country "{country}".
+(2) You will only answer with "Yes.", "No." or "I can't answer that.".
+(3) You must always answer truthfully.
+(4) If the user explicitly asks you if the country is "{country}" you must answer "I can't answer that.".
+(5) If you don't know the answer, you must answer with "I can't answer that".
+
+Here are the possible answers you can give. Never deviate from those in any way.
+(1) "Yes."
+(2) "No."
+(3) "I can't answer that."
+
+Q: Is this country located on Earth?
+A: Yes.
+
+Q: Is this country located on Mars?
+A: No.
+
+Q: Is this country very gay?
+A: I can't answer that.
     """
-DEFAULT_ACCEPTANCE_MESSAGE = (
-    "Ok, I will not answer anything else but yes, no or I can not answer that."
-)
 
 
 def build_context(
@@ -50,7 +67,6 @@ def build_messages(
     country: str,
     question: str,
     prompt_model: str = DEFAULT_PROMPT_MODEL,
-    acceptance_message: str = DEFAULT_ACCEPTANCE_MESSAGE,
     context: list[dict[str, str]] = None,
 ) -> list[dict[str, str]]:
     """
@@ -58,8 +74,7 @@ def build_messages(
     If the argument prompt_model is provided, it must have a {country} placeholder.
     """
     messagesBuilder = MessagesBuilder()
-    messagesBuilder.add_user_message(prompt_model.format(country=country))
-    messagesBuilder.add_assistant_message(acceptance_message)
+    messagesBuilder.add_system_message(prompt_model.format(country=country))
 
     if context:
         build_context(messagesBuilder, context)
@@ -80,7 +95,6 @@ def get_answer(
     country: str,
     question: str,
     prompt_model: str = DEFAULT_PROMPT_MODEL,
-    acceptance_message: str = DEFAULT_ACCEPTANCE_MESSAGE,
     context: list[dict[str, str]] = None,
 ) -> str | None:
     """
@@ -91,17 +105,19 @@ def get_answer(
         country=country,
         question=question,
         prompt_model=prompt_model,
-        acceptance_message=acceptance_message,
         context=context,
     )
 
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-0301",
-        messages=messages,
-        temperature=0.0,
-        max_tokens=50,
-        timeout=90,
-    )
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo-0301",
+            messages=messages,
+            temperature=0.0,
+            max_tokens=50,
+            timeout=90,
+        )
+    except openai.error.APIError:
+        return None
 
     response_text = response.choices[0]["message"]["content"]
 

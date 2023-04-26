@@ -88,7 +88,7 @@ def validate_answer(answer: str) -> str:
     """Returns a validated answer."""
     if answer.lower() in ["yes.", "no."]:
         return answer
-    return "I can not answer that."
+    return "I can't answer that."
 
 
 def get_answer(
